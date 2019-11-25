@@ -8,6 +8,7 @@
 *   2 - turn
 *   1 - speed
 */
+
 int     speed = 0,
         turnspeed = 0;
 bool    angle = 0,
@@ -24,21 +25,17 @@ void setup()
     Serial.begin(115200);
 }
 
-String command = "";
+char *command;
 
 void loop()
 {
+    command = "";
     while(!Serial.available());
-    command = Serial.readStringUntil('\n');
-//      Parser
+    Serial.readBytes(command, 3);
     speed =     command[0];
     turnspeed = command[1];
     direction = command[2] & 1;
     angle =     command[2] & 2;
-    // direction = (command[1] & 1)>>1;
-    // isturning = (command[1] & 2)>>1;
-    // angle = (command[1] & 4)>>1;
-//      OCHEN' LIPKA
     analogWrite(  PWM1,   speed);
     digitalWrite( INA1,   (speed > 10)?direction:!direction);
     digitalWrite( INB1,   (speed > 10)?!direction:direction);
@@ -46,6 +43,3 @@ void loop()
     digitalWrite( INA2,   (turnspeed > 20)?angle:!angle);
     digitalWrite( INB2,   (turnspeed > 20)?!angle:angle);
 }
-    // analogWrite(PWM1, isturning?200:0);
-    // digitalWrite(INA2, isturning?angle:LOW);
-    // digitalWrite(INB2, isturning?!angle:LOW);

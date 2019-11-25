@@ -36,10 +36,24 @@ void loop()
     turnspeed = command[1];
     direction = command[2] & 1;
     angle =     command[2] & 2;
+    if(abs(speed) > 10){
     analogWrite(  PWM1,   speed);
-    digitalWrite( INA1,   (speed > 10)?direction:!direction);
-    digitalWrite( INB1,   (speed > 10)?!direction:direction);
-    analogWrite(  PWM1,   turnspeed);
-    digitalWrite( INA2,   (turnspeed > 20)?angle:!angle);
-    digitalWrite( INB2,   (turnspeed > 20)?!angle:angle);
+    digitalWrite( INA1,   (speed > 0)?direction:!direction);
+    digitalWrite( INB1,   (speed > 0)?!direction:direction);
+    }
+    else
+    {
+      digitalWrite( INA1, LOW);
+      digitalWrite( INB1, LOW);  
+    }
+    if(abs(turnspeed) > 20){
+      analogWrite(  PWM1,   turnspeed);
+      digitalWrite( INA2,   (turnspeed > 0)?angle:!angle);
+      digitalWrite( INB2,   (turnspeed > 0)?!angle:angle);
+    }
+    else
+    {
+      digitalWrite( INA2, LOW);
+      digitalWrite( INB2, LOW);
+    }
 }

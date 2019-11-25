@@ -44,7 +44,7 @@ void loop()
       digitalWrite( INA1, LOW);
       digitalWrite( INB1, LOW);
     }
-    if(!direction){
+    if(direction){
       analogWrite(  PWM1,   150);
       digitalWrite( INA2,   (direction == 1)?LOW:HIGH);
       digitalWrite( INB2,   (direction == 1)?HIGH:LOW);

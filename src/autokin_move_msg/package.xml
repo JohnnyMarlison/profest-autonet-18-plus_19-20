@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>autokin_move_msg</name>
+  <version>0.1.0</version>
+  <description>Msg for moving in a way of automobile kinematic</description>
+
+  <maintainer email="033zhek@gmail.com">033zhek</maintainer>
+  <license>BSD</license>
+  <author email="033zhek@gmail.com">033zhek</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>message_generation</build_depend>
+  <exec_depend>message_runtime</exec_depend>
+
+</package>

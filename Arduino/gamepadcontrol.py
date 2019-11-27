@@ -1,11 +1,19 @@
 import xbox
 import serial
 
-# ser = serial.Serial('/dev/ttyUSB0',115200)
+ser = serial.Serial('/dev/ttyUSB0',115200)
 joy = xbox.Joystick()
-command = b'123'
 while True:
-    (x,y) = joy.leftStick()
-    command = chr(int(abs(y * 255))) + chr(int(abs(x * 255))) + chr((int((y > 0))*2 + int(x > 0)))
-    # ser.write(command.encode('utf-8'))
-    print(command)
+    (x, y) = joy.leftStick()
+    command = chr(abs(int(y*255)))
+    moving_forward = int(y > 0)
+    if y == 0:
+        direction = 0
+    elif y > 0:
+        direction = 2
+    else:
+        direction = 4
+    command += chr(direction + moving_forward)
+    command = command.encode('utf-8')
+    # print(type(command))
+    ser.write(command)

@@ -24,34 +24,41 @@ void setup()
     Serial.begin(115200);
 }
 
-char *command;
+char command[2];
 
 void loop()
 {
-    command = "";
-    while(!Serial.available());
+  if (Serial.available()) {
     Serial.readBytes(command, 2);
-    speed           = command[0];
-    moving_forward  = command[1] & 1;
-    direction       = (command[1] >> 1) & 3;
-    if(speed > 10){
-    analogWrite(  PWM1,   speed);
-    digitalWrite( INA1,   (speed > 0)?direction:!direction);
-    digitalWrite( INB1,   (speed > 0)?!direction:direction);
-    }
-    else
-    {
-      digitalWrite( INA1, LOW);
-      digitalWrite( INB1, LOW);
-    }
-    if(!direction){
-      analogWrite(  PWM1,   150);
-      digitalWrite( INA2,   (direction == 1)?LOW:HIGH);
-      digitalWrite( INB2,   (direction == 1)?HIGH:LOW);
-    }
-    else
-    {
-      digitalWrite( INA2, LOW);
-      digitalWrite( INB2, LOW);
-    }
+    _speed           = int(command[0]);
+    moving_forward  = int(command[1] & 1);
+    turnside       = int((command[1] >> 1));
+    Serial.print(_speed);
+    Serial.print(" ");
+    Serial.print(moving_forward);
+    Serial.print(" ");
+    Serial.print(turnside);
+    Serial.println();
+  }
+  if (_speed > 0) {
+    digitalWrite( INA1,   !moving_forward);
+    digitalWrite( INB1,   moving_forward);
+    analogWrite(PWM1, _speed);
+  }
+  else
+  {
+    digitalWrite( INA1, LOW);
+    digitalWrite( INB1, LOW);
+  }
+  if (turnside != 0) {
+    digitalWrite( INA2,   (turnside == 1) ? LOW : HIGH);
+    digitalWrite( INB2,   (turnside == 1) ? HIGH : LOW);
+    digitalWrite( PWM2,   HIGH);
+  }
+  else
+  {
+    digitalWrite( INA2, LOW);
+    digitalWrite( INB2, LOW);
+  }
 }
+

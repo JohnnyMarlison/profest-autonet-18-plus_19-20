@@ -1,3 +1,5 @@
+# on k-lab-HP/nuc/other pc to ssh: python server_camera.py 
+# on other pc: python client_pc.py
 import cv2
 import time
 import numpy

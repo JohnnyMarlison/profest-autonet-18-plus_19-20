@@ -25,9 +25,10 @@ while(True):
 	
 	time_elapsed = time.time() - prev
 	if (time_elapsed > 1./frame_rate):
-		image = frame.array
+		image = frame
 		prev = time.time()
 		encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
+		result, imencode = cv2.imencode('.jpg', image, encode_param)
 		data = np.array(imencode)
 		stringData = data.tostring()
 		print("start translate: ", len(stringData))

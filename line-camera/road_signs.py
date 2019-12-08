@@ -3,7 +3,7 @@ import cv2
 def nothing(x):
     pass
 
-cap = cv2.VideoCapture(-1)
+cap = cv2.VideoCapture(0)
 
 cv2.namedWindow('result')
 
@@ -38,12 +38,8 @@ while (True):
     result = cv2.bitwise_and(frame, frame, mask = mask)
     cv2.imshow('result', result)
 
-
-
-    # Press Q on keyboard to stop recording
-    # if cv2.waitKey(1) & 0xFF == ord('q'):
-    #     break
-    if cv2.waitKey(1) == 27:
+    #Press Q on keyboard to stop recording
+    if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
 cap.release()

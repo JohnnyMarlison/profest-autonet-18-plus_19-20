@@ -2,40 +2,75 @@
 
 #define DirectionPin    (10)
 #define BaudRate        (57600)
-#define MAX_ANGLE       (150)
+#define MAX_POSITION    (30)
 #define BASIC_SPEED     (200)
 #define COMMAND_LEN     (2)
-#define LEFT_MOTOR_A    (4)
-#define LEFT_MOTOR_B    (5)
-#define RIGHT_MOTOR_A   (6)
-#define RIGHT_MOTOR_B   (7)
+#define LEFT_MOTOR_A    (A0)
+#define LEFT_MOTOR_B    (A1)
+#define RIGHT_MOTOR_A   (A2)
+#define RIGHT_MOTOR_B   (A3)
 #define FORWARD         (0)
 #define BACKWARD        (1)
+#define ID              (1)
+#define TIMEOUT         (100)
 
-int     Cur_angle = 0,
-        pos = 0,
-        i = -150,
-        com[COMMAND_LEN];
 
-int step = 5;
 
-void correct_position(int & pos) {
-    pos = (pos < -MAX_ANGLE) ? -MAX_ANGLE : pos;
-    pos = (pos > MAX_ANGLE) ? MAX_ANGLE : pos;
-}
+class Dynamixel : public AX12A
+{
+    private:
+        int pos;
 
-void turnAngle(int angle, int _speed = BASIC_SPEED) {
-    Cur_angle = angle;
-    correct_position(Cur_angle);
-    ax12a.moveSpeed(1, static_cast <int> (512 + angle * 3.41), _speed);
-}
+    public:
+    Dynamixel()
+    {
+        begin(BaudRate, DirectionPin, &Serial2);
+        setEndless(ID, OFF);
+        pos = 0;
+    }
+
+    void setPos(int _pos = 0)
+    {
+        if (_pos  > MAX_POSITION)
+        {
+            pos = static_cast <int> (512 + 3.41 * MAX_POSITION);
+        }
+        else if (_pos < - MAX_POSITION)
+        {
+            pos = static_cast <int> (512 - 3.41 * MAX_POSITION);
+        }
+        else
+        {
+            pos = static_cast <int> (512 + 3.41 * _pos);
+        }
+    }
+
+    int getPos()
+    {
+        return readPosition(ID);
+    }
+
+    void turn()
+    {
+        int time = millis();
+        while (pos != getPos())
+        {
+            moveSpeed(ID,pos,BASIC_SPEED);
+            delay(100);
+            if(millis() - time >= TIMEOUT) return;
+        }
+    }
+
+
+};
+
+
 
 void setup() 
 {
-     Serial.begin(9600);
-    ax12a.begin(BaudRate, DirectionPin, &Serial2);
-    ax12a.setEndless(1, OFF);
-    turnAngle(0);
+    Serial.begin(9600);
+    pinMode(11,OUTPUT);
+    Dynamixel srv;
 }
 
 void drive(int speed)
@@ -62,11 +97,10 @@ void stop()
 
 void loop()
 {
-  Serial.println(ax12a.readPosition(1));
-  delay(1000);
-  turnAngle(30);
-  delay(500);
-  Serial.println(ax12a.readPosition(1));
+    analogWrite(A0, 200);
+    analogWrite(A1, 0);
+    analogWrite(A2, 200);
+    analogWrite(A3, 0);   
 }
 
 

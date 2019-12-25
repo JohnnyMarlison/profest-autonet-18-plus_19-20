@@ -13,6 +13,7 @@
 #define BACKWARD        (1)
 #define ID              (1)
 #define TIMEOUT         (100)
+#define ZERO            (480)
 
 
 
@@ -33,15 +34,15 @@ class Dynamixel : public AX12A
     {
         if (_pos  > MAX_POSITION)
         {
-            pos = static_cast <int> (512 + 3.41 * MAX_POSITION);
+            pos = static_cast <int> (ZERO + 3.41 * MAX_POSITION);
         }
         else if (_pos < - MAX_POSITION)
         {
-            pos = static_cast <int> (512 - 3.41 * MAX_POSITION);
+            pos = static_cast <int> (ZERO - 3.41 * MAX_POSITION);
         }
         else
         {
-            pos = static_cast <int> (512 + 3.41 * _pos);
+            pos = static_cast <int> (ZERO + 3.41 * _pos);
         }
     }
 
@@ -60,18 +61,21 @@ class Dynamixel : public AX12A
             if(millis() - time >= TIMEOUT) return;
         }
     }
-
+    void set_and_turn(int _pos = 0)
+    {
+      setPos(_pos);
+      turn();
+    }
 
 };
 
 
+Dynamixel srv;
 
 void setup() 
 {
     Serial.begin(9600);
-    pinMode(11,OUTPUT);
-    Dynamixel srv;
-}
+    }
 
 void drive(int speed)
 {
@@ -83,8 +87,8 @@ void drive(int speed)
     }
     analogWrite(LEFT_MOTOR_A,   (speed > 0)?    0:abs(speed));
     analogWrite(LEFT_MOTOR_B,   (speed < 0)?    0:abs(speed));
-    analogWrite(RIGHT_MOTOR_A,  (speed > 0)?    0:abs(speed));
-    analogWrite(RIGHT_MOTOR_B,  (speed < 0)?    0:abs(speed));        
+    analogWrite(RIGHT_MOTOR_A,  (speed < 0)?    0:abs(speed));
+    analogWrite(RIGHT_MOTOR_B,  (speed > 0)?    0:abs(speed));        
 } 
 void stop()
 {
@@ -97,10 +101,18 @@ void stop()
 
 void loop()
 {
-    analogWrite(A0, 200);
-    analogWrite(A1, 0);
-    analogWrite(A2, 200);
-    analogWrite(A3, 0);   
+    delay(600);
+    drive(255);
+    delay(600);
+    drive(-255);
+    delay(600);
+    stop();
+    delay(600);
+    srv.set_and_turn(25);
+    delay(600);
+    drive(255);
+    delay(600);
+    srv.set_and_turn(0);
 }
 
 

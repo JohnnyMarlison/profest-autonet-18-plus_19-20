@@ -69,13 +69,14 @@ class Dynamixel : public AX12A
 
 };
 
-
+uint8_t com[COMMAND_LEN];
 Dynamixel srv;
 
 void setup() 
 {
     Serial.begin(9600);
-    }
+    srv.set_and_turn(0);
+}
 
 void drive(int speed)
 {
@@ -101,35 +102,10 @@ void stop()
 
 void loop()
 {
-    delay(600);
-    drive(255);
-    delay(600);
-    drive(-255);
-    delay(600);
-    stop();
-    delay(600);
-    srv.set_and_turn(25);
-    delay(600);
-    drive(255);
-    delay(600);
-    srv.set_and_turn(0);
+    if (Serial.available())
+    {
+        Serial.readBytes(com, COMMAND_LEN);
+        drive(2 * (com[0] - 128));
+        srv.set_and_turn(com[1] - 30);
+    }
 }
-
-
-
-
-    // int speed_task, ang_task;
-    // pos = ax12a.readPosition(1);
-    // if (Serial.available() == COMMAND_LEN)
-    // {
-    //     for(uint8_t i = 0; i < COMMAND_LEN; i++)
-    //     {
-    //         com[i] = Serial.read();
-    //     }
-    // }
-    // speed_task = com[0];
-    // ang_task = com[1];
-    // if(ang != pos)
-    // {
-    //     turnAngle(ang, BASIC_SPEED);
-    // }
